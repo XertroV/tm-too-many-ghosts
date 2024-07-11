@@ -61,33 +61,42 @@ void RenderInterface() {
     if (!permissionsOkay) return;
     if (!g_windowVisible) return;
     if (UI::Begin("Too Many Ghosts", g_windowVisible, UI::WindowFlags::AlwaysAutoResize | UI::WindowFlags::NoCollapse)) {
-        auto grString = GenGhostRankString();
-        g_numGhosts = UI::SliderInt("Number of Ghosts", g_numGhosts, 1, 100);
-        g_ghostRankOffset = UI::InputInt("Start at rank", g_ghostRankOffset + 1) - 1;
-        if (MDisabledButton(lastRefresh + disableTime > Time::Now, "Toggle " + grString + ".")) {
-            lastRefresh = Time::Now;
-            startnew(ToggleTopGhosts);
-        }
-        if (MDisabledButton(lastRefresh + disableTime > Time::Now, "Show " + grString + ".")) {
-            lastRefresh = Time::Now;
-            startnew(ShowTopGhosts);
-        }
-        if (MDisabledButton(lastRefresh + disableTime > Time::Now, "Hide " + grString + ".")) {
-            lastRefresh = Time::Now;
-            startnew(HideTopGhosts);
-        }
-        if (MDisabledButton(lastRefresh + disableTime > Time::Now, "Hide all enabled ghosts.")) {
-            lastRefresh = Time::Now;
-            startnew(HideAllGhosts);
-        }
-        AddSimpleTooltip("Useful if you reduce the number of ghosts and there are some left over.");
-        int lastRank = g_ghostRankOffset + g_numGhosts;
-        if (MDisabledButton(lastRefresh + disableTime > Time::Now, "Spectate ghost at rank " + lastRank + (g_numGhosts > 1 ? "\n(the last of " + grString + ")" : ""))) {
-            lastRefresh = Time::Now;
-            startnew(ToggleSpectator);
+        auto app = GetApp();
+        if (app.PlaygroundScript !is null) {
+            RenderMainUI();
+        } else {
+            UI::Text(Meta::ExecutingPlugin().Name + " only works in Solo modes.");
         }
     }
     UI::End();
+}
+
+void RenderMainUI() {
+    auto grString = GenGhostRankString();
+    g_numGhosts = UI::SliderInt("Number of Ghosts", g_numGhosts, 1, 100);
+    g_ghostRankOffset = UI::InputInt("Start at rank", g_ghostRankOffset + 1) - 1;
+    if (MDisabledButton(lastRefresh + disableTime > Time::Now, "Toggle " + grString + ".")) {
+        lastRefresh = Time::Now;
+        startnew(ToggleTopGhosts);
+    }
+    if (MDisabledButton(lastRefresh + disableTime > Time::Now, "Show " + grString + ".")) {
+        lastRefresh = Time::Now;
+        startnew(ShowTopGhosts);
+    }
+    if (MDisabledButton(lastRefresh + disableTime > Time::Now, "Hide " + grString + ".")) {
+        lastRefresh = Time::Now;
+        startnew(HideTopGhosts);
+    }
+    if (MDisabledButton(lastRefresh + disableTime > Time::Now, "Hide all enabled ghosts.")) {
+        lastRefresh = Time::Now;
+        startnew(HideAllGhosts);
+    }
+    AddSimpleTooltip("Useful if you reduce the number of ghosts and there are some left over.");
+    int lastRank = g_ghostRankOffset + g_numGhosts;
+    if (MDisabledButton(lastRefresh + disableTime > Time::Now, "Spectate ghost at rank " + lastRank + (g_numGhosts > 1 ? "\n(the last of " + grString + ")" : ""))) {
+        lastRefresh = Time::Now;
+        startnew(ToggleSpectator);
+    }
 }
 
 void RenderMenu() {
